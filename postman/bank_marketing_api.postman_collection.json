@@ -1,0 +1,149 @@
+{
+  "info": {
+    "_postman_id": "b6f2b8c0-4b2a-4a3e-9a2e-bank-marketing-api",
+    "name": "Bank Marketing Propensity API (Modal)",
+    "description": "Assertions against the deployed Modal FastAPI service for the bank-marketing subscription-propensity pipeline. Covers health, pipeline info, a valid prediction (200), and an invalid prediction (422).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://awalla63--bank-marketing-propensity-api-fastapi-app.modal.run"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/", "host": ["{{base_url}}"], "path": [""] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('Artifact is loaded', function () {",
+              "    pm.expect(body.artifact_loaded).to.eql(true);",
+              "});",
+              "pm.test('Status is ok', function () {",
+              "    pm.expect(body.status).to.eql('ok');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pipeline info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/info", "host": ["{{base_url}}"], "path": ["info"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('Reports LogisticRegression + custom transformer', function () {",
+              "    pm.expect(body.metadata.model_type).to.eql('LogisticRegression');",
+              "    pm.expect(body.metadata.custom_transformer).to.eql('MeanTargetEncoder');",
+              "});",
+              "pm.test('sklearn_version is present', function () {",
+              "    pm.expect(body.metadata.sklearn_version).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('built_at is present', function () {",
+              "    pm.expect(body.metadata.built_at).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.test('cat/num columns are non-empty arrays', function () {",
+              "    pm.expect(body.cat_columns).to.be.an('array').that.is.not.empty;",
+              "    pm.expect(body.num_columns).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Predict - valid input (200)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": 41,\n  \"job\": \"technician\",\n  \"marital\": \"married\",\n  \"education\": \"university.degree\",\n  \"default\": \"no\",\n  \"housing\": \"yes\",\n  \"loan\": \"no\",\n  \"contact\": \"cellular\",\n  \"month\": \"may\",\n  \"day_of_week\": \"thu\",\n  \"campaign\": 2,\n  \"pdays\": 999,\n  \"previous\": 0,\n  \"poutcome\": \"nonexistent\",\n  \"emp_var_rate\": 1.1,\n  \"cons_price_idx\": 93.994,\n  \"cons_conf_idx\": -36.4,\n  \"euribor3m\": 4.857,\n  \"nr_employed\": 5191.0\n}"
+        },
+        "url": { "raw": "{{base_url}}/predict", "host": ["{{base_url}}"], "path": ["predict"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('subscribe_probability is a valid probability', function () {",
+              "    pm.expect(body.subscribe_probability).to.be.a('number');",
+              "    pm.expect(body.subscribe_probability).to.be.within(0, 1);",
+              "});",
+              "pm.test('predicted_label is yes or no', function () {",
+              "    pm.expect(['yes', 'no']).to.include(body.predicted_label);",
+              "});",
+              "pm.test('baseline_training_rate is present', function () {",
+              "    pm.expect(body.baseline_training_rate).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Predict - invalid input (422)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": 999,\n  \"job\": \"not-a-real-job\",\n  \"marital\": \"married\",\n  \"education\": \"university.degree\",\n  \"default\": \"no\",\n  \"housing\": \"yes\",\n  \"loan\": \"no\",\n  \"contact\": \"cellular\",\n  \"month\": \"may\",\n  \"day_of_week\": \"thu\",\n  \"campaign\": -5,\n  \"pdays\": 999,\n  \"previous\": 0,\n  \"poutcome\": \"nonexistent\",\n  \"emp_var_rate\": 1.1,\n  \"cons_price_idx\": 93.994,\n  \"cons_conf_idx\": -36.4,\n  \"euribor3m\": 4.857,\n  \"nr_employed\": 5191.0\n}"
+        },
+        "url": { "raw": "{{base_url}}/predict", "host": ["{{base_url}}"], "path": ["predict"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 422', function () {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "pm.test('Response has validation detail', function () {",
+              "    pm.expect(body.detail).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

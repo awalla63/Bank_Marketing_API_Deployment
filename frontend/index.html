@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bank Marketing Subscription Propensity</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Term Deposit Subscription Propensity</h1>
+      <p class="subtitle">
+        Fitted scikit-learn Pipeline served from
+        <a id="api-link" href="#" target="_blank" rel="noopener"></a> via FastAPI on Modal.
+      </p>
+    </header>
+
+    <section class="card" id="info-card">
+      <h2>Pipeline info</h2>
+      <div id="info-content" class="muted">Loading /info…</div>
+    </section>
+
+    <section class="card">
+      <h2>Try a prediction</h2>
+      <form id="predict-form">
+        <div class="grid">
+          <label>Age
+            <input type="number" name="age" min="17" max="100" value="41" required />
+          </label>
+          <label>Job
+            <select name="job" required></select>
+          </label>
+          <label>Marital status
+            <select name="marital" required></select>
+          </label>
+          <label>Education
+            <select name="education" required></select>
+          </label>
+          <label>Has credit in default?
+            <select name="default" required></select>
+          </label>
+          <label>Has housing loan?
+            <select name="housing" required></select>
+          </label>
+          <label>Has personal loan?
+            <select name="loan" required></select>
+          </label>
+          <label>Contact type
+            <select name="contact" required></select>
+          </label>
+          <label>Last contact month
+            <select name="month" required></select>
+          </label>
+          <label>Last contact day of week
+            <select name="day_of_week" required></select>
+          </label>
+          <label>Campaign contacts
+            <input type="number" name="campaign" min="1" max="60" value="2" required />
+          </label>
+          <label>Days since previous contact (999 = never)
+            <input type="number" name="pdays" min="0" max="999" value="999" required />
+          </label>
+          <label>Previous contacts
+            <input type="number" name="previous" min="0" max="20" value="0" required />
+          </label>
+          <label>Previous campaign outcome
+            <select name="poutcome" required></select>
+          </label>
+          <label>Employment variation rate
+            <input type="number" step="0.1" name="emp_var_rate" min="-5" max="5" value="1.1" required />
+          </label>
+          <label>Consumer price index
+            <input type="number" step="0.001" name="cons_price_idx" min="85" max="105" value="93.994" required />
+          </label>
+          <label>Consumer confidence index
+            <input type="number" step="0.1" name="cons_conf_idx" min="-60" max="-10" value="-36.4" required />
+          </label>
+          <label>Euribor 3-month rate
+            <input type="number" step="0.001" name="euribor3m" min="0" max="10" value="4.857" required />
+          </label>
+          <label>Number of employees (thousands, indicator)
+            <input type="number" step="0.1" name="nr_employed" min="4500" max="5500" value="5191.0" required />
+          </label>
+        </div>
+
+        <button type="submit">Predict subscription probability</button>
+      </form>
+
+      <div id="result" class="result" hidden></div>
+      <div id="error" class="error" hidden></div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
