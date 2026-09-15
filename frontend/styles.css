@@ -148,3 +148,14 @@ button:disabled {
   font-size: 1.6rem;
   font-weight: 700;
 }
+
+.footer {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--accent);
+}
